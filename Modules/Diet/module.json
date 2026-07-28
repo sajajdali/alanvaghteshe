@@ -1,0 +1,11 @@
+{
+    "name": "Diet",
+    "alias": "diet",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Diet\\Providers\\DietServiceProvider"
+    ],
+    "files": []
+}

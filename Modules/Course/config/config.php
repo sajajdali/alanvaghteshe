@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'name' => 'Course',
+    'permission' => [
+        [
+            'gate' => [
+                'course' => 'دسترسی به دوره ها',
+            ],
+            'type' => 'success',
+            'display_name' => 'بخش دوره ها',
+            'permissions' => [
+                'course.create' => 'ایجاد دوره',
+                'course.edit' => 'ویرایش دوره',
+                'course.delete' => 'حذف دوره',
+            ],
+        ],
+    ],
+    'menu' => [
+        'title' => 'دوره ها',
+        'gate' => ['course'],
+        'policy_class' => null,
+        'has_divider' => true,
+        'priority' => 92,
+        'children' => [
+            [
+                'title' => 'مدیریت دوره ها',
+                'gate' => 'viewAny',
+                'policy_class' => \Modules\Course\app\Models\Course::class,
+                'icon' => 'fa fa-graduation-cap',
+                'route' => null,
+                'has_badge' => false,
+                'has_child' => true,
+                'children' => [
+                    [
+                        'title' => 'لیست',
+                        'gate' => 'viewAny',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-list',
+                        'route' => 'admin.course.index',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                    [
+                        'title' => 'افزودن',
+                        'gate' => 'create',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-plus-circle',
+                        'route' => 'admin.course.create',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                    [
+                        'title' => 'گروه‌بندی دوره‌ها',
+                        'gate' => 'viewAny',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-sitemap',
+                        'route' => 'admin.course.categories',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                    [
+                        'title' => 'بنرهای اپلیکیشن',
+                        'gate' => 'viewAny',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-image',
+                        'route' => 'admin.course.banners.index',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                    [
+                        'title' => 'سوالات متداول دوره‌ها',
+                        'gate' => 'viewAny',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-question-circle',
+                        'route' => 'admin.course.faqs.index',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                    [
+                        'title' => 'خریدهای دوره',
+                        'gate' => 'viewAny',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-shopping-cart',
+                        'route' => 'admin.course.purchased',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                    [
+                        'title' => 'پرداخت‌ها',
+                        'gate' => 'viewAny',
+                        'policy_class' => \Modules\Course\app\Models\Course::class,
+                        'icon' => 'fa fa-credit-card',
+                        'route' => 'admin.course.payments',
+                        'has_child' => false,
+                        'children' => null,
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

@@ -1,0 +1,59 @@
+<?php
+
+namespace Modules\Admin\Providers;
+
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use Modules\Transaction\Entities\Transaction;
+
+class RouteServiceProvider extends ServiceProvider
+{
+    /**
+     * The module namespace to assume when generating URLs to actions.
+     *
+     * @var string
+     */
+    protected $moduleNamespace = 'Modules\Admin\Http\Controllers';
+
+    /**
+     * Called before routes are registered.
+     *
+     * Register any model bindings or pattern based filters.
+     *
+     * @return void
+     */
+    public function boot(): void
+    {
+        parent::boot();
+    }
+
+    /**
+     * Define the routes for the application.
+     *
+     * @return void
+     */
+    public function map(): void
+    {
+        $this->mapAdminRoutes();
+        $this->bindingModel();
+
+    }
+
+    /**
+     * Define the "web" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapAdminRoutes(): void
+    {
+        Route::middleware('web')
+            ->group(module_path('Admin', '/Routes/admin.php'));
+    }
+
+    public function bindingModel(): void
+    {
+        Route::model('transaction', Transaction::class);
+    }
+}

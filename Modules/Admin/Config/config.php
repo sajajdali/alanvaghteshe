@@ -1,0 +1,100 @@
+<?php
+
+return [
+    'name' => 'Admin',
+    'permission' => [
+        [
+            'gate' => [
+                'admin.dashboard' => 'پیشخوان مدیریت',
+            ],
+            'type' => 'warning',
+            'display_name' => 'پیشخوان مدیریت',
+            'permissions' => [
+                'admin.dashboard.analytic' => 'مشاهده آمار',
+                'admin.supporterActivity' => 'امار فعالیت پشتیبانان',
+                'SUPER_ADMIN_ACCESS' => 'دسترسی مدیر کل',
+            ],
+        ],
+    ],
+
+    'menu' => [
+        'title' => 'مدیریت',
+        'gate' => 'ADMIN_ACCESS',
+        'policy_class' => null,
+        'has_divider' => true,
+        'priority' => 110,
+        'children' => [//it is required
+            [
+                'title' => 'پیشخوان',
+                'gate' => 'ADMIN_ACCESS',
+                'policy_class' => null,
+                'icon' => 'fe fe-home',
+                'route' => 'admin.dashboard',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+
+            [
+                'title' => 'فایل‌ها',
+                'gate' => 'ADMIN_ACCESS',
+                'policy_class' => null,
+                'icon' => 'fe fe-folder',
+                'route' => 'admin.file',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+            [
+                'title' => 'گزارش گیری',
+                'gate' => 'ADMIN_ACCESS',
+                'policy_class' => null,
+                'icon' => 'fe fe-bar-chart-2',
+                'route' => 'admin.reports',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+            [
+                'title' => 'فعالیت پشتیبانان',
+                'gate' => 'admin.supporterActivity',
+                'policy_class' => null,
+                'icon' => 'fe fe-clock',
+                'route' => 'admin.supporter.activity',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+            [
+                'title' => 'گزارش وضعیت کاربران',
+                'gate' => 'ADMIN_ACCESS',
+                'policy_class' => null,
+                'icon' => 'fe fe-anchor',
+                'route' => 'admin.user.reports',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+            [
+                'title' => 'واتس اپ (ثبت گوشی)',
+                'gate' => 'create',
+                'policy_class' => null,
+                'icon' => 'fa fa-whatsapp',
+                'route' => 'admin.whatsapp.index',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+            [
+                'title' => 'پیغام های واتس اپ',
+                'gate' => 'create',
+                'policy_class' => null,
+                'icon' => 'fe fe-book',
+                'route' => 'admin.whatsapp.messages',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+        ],
+    ],
+];

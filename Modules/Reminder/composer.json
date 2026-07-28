@@ -1,0 +1,31 @@
+{
+    "name": "nwidart/reminder",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Reminder\\": "",
+            "Modules\\Reminder\\App\\": "app/",
+            "Modules\\Reminder\\Database\\Factories\\": "database/factories/",
+            "Modules\\Reminder\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Reminder\\Tests\\": "tests/"
+        }
+    }
+}
