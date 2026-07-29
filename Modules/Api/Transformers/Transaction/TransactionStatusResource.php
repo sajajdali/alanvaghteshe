@@ -42,7 +42,7 @@ class TransactionStatusResource extends JsonResource
                     'amount' => $this->total_cost
                 ]
             ],
-            'payment_link' => $this->status == TransactionStatusEnum::SUCCESSFUL ? '' : str_replace("api", 'crm', route('payment', $this)),
+            'payment_link' => $this->status == TransactionStatusEnum::SUCCESSFUL ? '' : str_replace("api", 'crm', route('payment.transaction', ['transaction' => $this->id])),
 
         ];
     }

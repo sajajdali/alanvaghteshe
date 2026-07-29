@@ -39,6 +39,12 @@ Route::get('/tl', function () {
 Route::middleware(['web'])->group(function () {
     Route::get('/secure_login', \Modules\Admin\Livewire\Login::class)->name('login');
     Route::get('/payment/{transaction}', \Modules\Admin\Livewire\Payment::class)->name('payment.transaction');
+    Route::get('/payment-link/{transaction}', function (Transaction $transaction) {
+        return redirect()->route('payment.transaction', array_merge(
+            ['transaction' => $transaction->id],
+            request()->query()
+        ));
+    })->name('payment');
     Route::any('/payment/{transaction}/callback', [\App\Http\Controllers\PaymentWebhookController::class, 'handle'])->name('payment.callback_saman');
     Route::post('/payment/gumroad/ping', [\Modules\Admin\Http\Controllers\AdminController::class, 'gumroadPing'])->name('payment.gumroad');
 });

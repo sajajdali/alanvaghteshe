@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Throwable;
 use Modules\Setting\Enum\SettingKeyEnum;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,10 +25,17 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
-        $activeGatway = setting(SettingKeyEnum::PAYMEN_ACTIVE_DRIVER);
-
-        $payStarSign = setting(SettingKeyEnum::PAYMENT_PAYSTAR_SIGN);
-        $payStarToken = setting(SettingKeyEnum::PAYMENT_PAYSTAR_TOKEN);
+        try {
+            $activeGatway = setting(SettingKeyEnum::PAYMEN_ACTIVE_DRIVER);
+            $payStarSign = setting(SettingKeyEnum::PAYMENT_PAYSTAR_SIGN);
+            $payStarToken = setting(SettingKeyEnum::PAYMENT_PAYSTAR_TOKEN);
+            $zarinpalMerchant = setting(SettingKeyEnum::PAYMENT_ZARINPAL_MERCHENT);
+        } catch (Throwable) {
+            $activeGatway = 'zarinpal';
+            $payStarSign = null;
+            $payStarToken = null;
+            $zarinpalMerchant = null;
+        }
 
         if ($activeGatway == 'saman') {
             config([
@@ -44,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
         else  {
             config([
                 'payment.default' => 'zarinpal',
-                'payment.drivers.zarinpal.merchantId' => setting(SettingKeyEnum::PAYMENT_ZARINPAL_MERCHENT),
+                'payment.drivers.zarinpal.merchantId' => $zarinpalMerchant,
             ]);
         }
 

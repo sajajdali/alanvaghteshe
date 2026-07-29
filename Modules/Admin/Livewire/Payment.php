@@ -90,7 +90,12 @@ class Payment extends Component
             }
         } catch (InvalidPaymentException $ex) {
             Log::warning('Saman verify failed: '.$ex->getMessage(), ['transaction_id' => $this->transaction->id]);
-            return redirect()->route('payment.failed')->with('error', $ex->getMessage());
+            return redirect()->route('payment.transaction', [
+                'transaction' => $this->transaction->id,
+                'tracking_code' => $this->transaction->transaction_code,
+                'status_payment' => false,
+                'call_back' => true,
+            ])->with('error', $ex->getMessage());
         } catch (\Exception $e) {
             Log::error('Payment verification error: '.$e->getMessage(), ['transaction_id' => $this->transaction->id, 'trace' => $e->getTraceAsString()]);
             abort(500, 'خطا در تایید تراکنش: '.$e->getMessage());

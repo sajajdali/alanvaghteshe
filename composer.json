@@ -47,7 +47,8 @@
     "autoload": {
         "files": [
             "helper/jdf.php",
-            "helper/function.php"
+            "helper/function.php",
+            "Modules/Setting/Helper/utils.php"
         ],
         "psr-4": {
             "App\\": "app/",
