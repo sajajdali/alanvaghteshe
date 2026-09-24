@@ -8,6 +8,7 @@ enum RouteEnum: string
     case SHOW_DIET = '/diet/{route}';
     case INVITE_FRIENDS = '/invite';
     case REGISTER = '/statement';
+    case ONBOARDING = '/onboarding';
     case PROFILE = '/profile';
     case ORDER_PACKAGE = '/package';
     case NEW_DIET = '/new_diet';
@@ -28,6 +29,7 @@ enum RouteEnum: string
             self::AGREE => 'تایید',
             self::ADD_WEIGHT => 'اضافه کردن وزن جدید',
             self::NEW_DIET => 'رژیم جدید',
+            self::ONBOARDING => 'آن‌بوردینگ',
             self::COURSE_LIST => 'لیست دوره‌ها',
             self::COURSE_DETAIL => 'جزئیات دوره',
         };

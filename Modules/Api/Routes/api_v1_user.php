@@ -16,12 +16,16 @@ use Modules\Api\Http\Controllers\Profile\CourseController;
 use Modules\Api\Http\Controllers\Profile\Consumption\ConsumptionController;
 
 Route::post('complete_register', [\Modules\Api\Http\Controllers\AuthController::class , 'completeRegister']);
+Route::get('registration/questions', [\Modules\Api\Http\Controllers\AuthController::class, 'registrationQuestions']);
 Route::get('landing/bmi_result', [\Modules\Api\Http\Controllers\LandingController::class, 'bmiResult'])->name('api.landing.bmi_result');
 
 //Route::get('landing', '')
 
 Route::post('logout', 'AuthController@logout');
 Route::get('me', 'UserController@me');
+Route::get('onboarding', [\Modules\Api\Http\Controllers\OnboardingController::class, 'show']);
+Route::post('onboarding/free-package/activate', [\Modules\Api\Http\Controllers\OnboardingController::class, 'activateFreePackage'])
+    ->middleware('throttle:5,1');
 Route::get('notification', 'UserController@notification');
 Route::post('notification', 'UserController@notificationRead');
 Route::post('notification/read-all', 'UserController@notificationReadAll');
@@ -147,6 +151,15 @@ Route::prefix('diet')->group(function () {
     Route::post('change_meal', 'DietController@change_mealv2');
     Route::post('request_new_diet', [\Modules\Api\Http\Controllers\DietController::class ,'newDiet' ]);
     Route::post('set_training_day', [\Modules\Api\Http\Controllers\DietController::class ,'setTrainingDay' ]);
+    Route::prefix('{dietRequest}/shopping-list')->group(function () {
+        Route::post('generate', [\Modules\Api\Http\Controllers\ShoppingListController::class, 'generate'])
+            ->middleware('throttle:5,1');
+        Route::get('', [\Modules\Api\Http\Controllers\ShoppingListController::class, 'current']);
+        Route::patch('{shoppingList}/check', [\Modules\Api\Http\Controllers\ShoppingListController::class, 'check']);
+        Route::post('{shoppingList}/retry', [\Modules\Api\Http\Controllers\ShoppingListController::class, 'retry'])
+            ->middleware('throttle:5,1');
+        Route::get('{shoppingList}', [\Modules\Api\Http\Controllers\ShoppingListController::class, 'show']);
+    });
 });
 Route::get('test', function () {
     $user = auth()->user();

@@ -1,0 +1,420 @@
+openapi: 3.0.3
+info:
+  title: API سبد خرید هوشمند رژیم
+  version: 1.0.0
+  description: ابتدا Login و سپس Verify را اجرا کنید. توکن Verify خودکار در Authorize ذخیره می‌شود.
+servers:
+  - url: /
+    description: همین سرور
+tags:
+  - name: Authentication
+    description: ورود پیامکی دو مرحله‌ای
+  - name: Onboarding
+    description: تعیین مسیر بعد از ورود و دریافت پیشنهاد فعال Onboarding
+  - name: Shopping List
+    description: سبد خرید روزانه و هفتگی رژیم
+paths:
+  /v1/login:
+    post:
+      tags: [Authentication]
+      summary: ارسال کد ورود
+      operationId: requestLoginCode
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+            example: { mobile: '09120000000' }
+      responses:
+        '201':
+          description: کد ارسال شد
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429':
+          description: برای ارسال مجدد باید صبر کنید
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+  /v1/verify:
+    post:
+      tags: [Authentication]
+      summary: تأیید کد و دریافت Bearer Token
+      description: پاسخ موفق، توکن را به‌صورت خودکار در Swagger ثبت می‌کند.
+      operationId: verifyLoginCode
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VerifyRequest' }
+            example: { mobile: '09120000000', code: '1234', device_os: web }
+      responses:
+        '200':
+          description: ورود موفق
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VerifyResponse' }
+        '400':
+          description: کد اشتباه یا منقضی
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /v1/onboarding:
+    get:
+      tags: [Onboarding]
+      summary: تعیین نمایش Onboarding و دریافت محتوای آن
+      description: مسیر یکپارچه عضویت را برمی‌گرداند؛ ثبت‌نام ناقص به /statement، کاربر بدون عضویت به /onboarding و عضو فعال به /profile می‌رود.
+      operationId: getOnboarding
+      security: [{ sanctumBearer: [] }]
+      responses:
+        '200':
+          description: تصمیم مسیر و محتوای حالت فعال
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OnboardingResponse' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+  /v1/onboarding/free-package/activate:
+    post:
+      tags: [Onboarding]
+      summary: فعال‌سازی یک‌باره پکیج رایگان Onboarding
+      description: فقط برای کاربر فاقد پکیج فعال و فقط زمانی که حالت free_package در CRM فعال است.
+      operationId: activateOnboardingFreePackage
+      security: [{ sanctumBearer: [] }]
+      responses:
+        '201':
+          description: پکیج رایگان فعال شد و کلاینت باید به پروفایل برود
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OnboardingActivationResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '429': { description: تعداد درخواست بیش از حد مجاز }
+  /v1/diet/{dietRequest}/shopping-list/generate:
+    post:
+      tags: [Shopping List]
+      summary: ساخت یا دریافت درخواست جاری سبد خرید
+      operationId: generateShoppingList
+      security: [{ sanctumBearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/DietRequestId' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PeriodRequest' }
+      responses:
+        '200':
+          description: سبد از قبل آماده است
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShoppingListResponse' }
+        '202':
+          description: درخواست در صف یا در حال پردازش است
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShoppingListResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { description: تعداد درخواست بیش از حد مجاز }
+  /v1/diet/{dietRequest}/shopping-list:
+    get:
+      tags: [Shopping List]
+      summary: مشاهده وضعیت یا نتیجه جاری بر اساس بازه
+      operationId: getCurrentShoppingList
+      security: [{ sanctumBearer: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/DietRequestId' }
+        - { $ref: '#/components/parameters/PeriodQuery' }
+      responses:
+        '200':
+          description: وضعیت جاری پیدا شد
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShoppingListResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /v1/diet/{dietRequest}/shopping-list/{shoppingList}:
+    get:
+      tags: [Shopping List]
+      summary: مشاهده یک سبد خرید با شناسه
+      operationId: showShoppingList
+      security: [{ sanctumBearer: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/DietRequestId' }
+        - { $ref: '#/components/parameters/ShoppingListId' }
+      responses:
+        '200':
+          description: وضعیت یا نتیجه سبد
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShoppingListResponse' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /v1/diet/{dietRequest}/shopping-list/{shoppingList}/check:
+    patch:
+      tags: [Shopping List]
+      summary: تیک‌زدن یا برداشتن تیک یک قلم
+      operationId: checkShoppingListItem
+      security: [{ sanctumBearer: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/DietRequestId' }
+        - { $ref: '#/components/parameters/ShoppingListId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CheckItemRequest' }
+      responses:
+        '200':
+          description: سبد به‌روزرسانی شد
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShoppingListResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /v1/diet/{dietRequest}/shopping-list/{shoppingList}/retry:
+    post:
+      tags: [Shopping List]
+      summary: تلاش مجدد برای سبد ناموفق
+      operationId: retryShoppingList
+      security: [{ sanctumBearer: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/DietRequestId' }
+        - { $ref: '#/components/parameters/ShoppingListId' }
+      responses:
+        '202':
+          description: درخواست مجدد در صف قرار گرفت
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShoppingListResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    sanctumBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+      description: توکن خروجی Verify را بدون عبارت Bearer وارد کنید.
+  parameters:
+    DietRequestId:
+      name: dietRequest
+      in: path
+      required: true
+      description: شناسه رژیم متعلق به کاربر واردشده
+      schema: { type: integer, minimum: 1 }
+      example: 324
+    ShoppingListId:
+      name: shoppingList
+      in: path
+      required: true
+      description: مقدار shopping_list_id از پاسخ ساخت
+      schema: { type: integer, minimum: 1 }
+      example: 42
+    PeriodQuery:
+      name: period
+      in: query
+      required: true
+      schema: { $ref: '#/components/schemas/Period' }
+  responses:
+    BadRequest:
+      description: عملیات با وضعیت فعلی قابل انجام نیست
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/MessageResponse' }
+    Unauthenticated:
+      description: توکن ارسال نشده یا معتبر نیست
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/MessageResponse' }
+    NotFound:
+      description: رژیم یا سبد متعلق به کاربر نیست یا پیدا نشد
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/MessageResponse' }
+    ValidationError:
+      description: خطای اعتبارسنجی ورودی
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ValidationError' }
+  schemas:
+    LoginRequest:
+      type: object
+      required: [mobile]
+      properties:
+        mobile: { type: string, description: به‌جای آن mobile_or_email نیز پذیرفته می‌شود }
+    VerifyRequest:
+      type: object
+      required: [mobile, code, device_os]
+      properties:
+        mobile: { type: string }
+        code: { type: string, pattern: '^\d{4}$' }
+        device_os: { type: string, enum: [android, ios, web] }
+        fcm_token: { type: string, nullable: true }
+        device_version: { type: string, nullable: true }
+        device_info: { type: object, nullable: true, additionalProperties: true }
+        appmetrica_profile_id: { type: string, nullable: true }
+    VerifyResponse:
+      type: object
+      required: [message, token, user, user_status, show_onboarding, next_route]
+      properties:
+        message: { type: string }
+        is_old_user: { type: boolean }
+        show_onboarding: { type: boolean, description: فقط برای کاربر فاقد پکیج فعال و در صورت فعال‌بودن تنظیم CRM مقدار true دارد }
+        user_status: { type: string, enum: [/statement, /onboarding, /profile], description: سازگار با مسیر مراحل عضویت اپ }
+        next_route: { type: string, enum: [/statement, /onboarding, /profile] }
+        token: { type: string, description: Sanctum Personal Access Token }
+        user: { type: object, additionalProperties: true }
+    OnboardingResponse:
+      type: object
+      required: [show_onboarding, next_route, mode, content, offer]
+      properties:
+        show_onboarding: { type: boolean }
+        next_route: { type: string, enum: [/statement, /onboarding, /profile] }
+        mode:
+          type: string
+          nullable: true
+          enum: [coupon, free_package, none]
+        content:
+          type: object
+          nullable: true
+          description: متن‌های داینامیک حالت فعال؛ متغیرهای name و days در Backend جایگزین شده‌اند.
+          additionalProperties: { type: string }
+        offer:
+          nullable: true
+          oneOf:
+            - { $ref: '#/components/schemas/OnboardingCouponOffer' }
+            - { $ref: '#/components/schemas/OnboardingPackageOffer' }
+    OnboardingCouponOffer:
+      type: object
+      required: [coupon_id, code, value, is_percent]
+      properties:
+        coupon_id: { type: integer }
+        code: { type: string }
+        value: { type: integer }
+        is_percent: { type: boolean }
+    OnboardingPackageOffer:
+      type: object
+      required: [package_id, name, days, type, type_name, already_claimed]
+      properties:
+        package_id: { type: integer }
+        name: { type: string }
+        days: { type: integer }
+        type: { type: integer }
+        type_name: { type: string }
+        already_claimed: { type: boolean }
+    OnboardingActivationResponse:
+      type: object
+      required: [message, next_route, package]
+      properties:
+        message: { type: string }
+        next_route: { type: string, enum: [/profile] }
+        package:
+          type: object
+          required: [package_user_id, package_id, start_at, end_at]
+          properties:
+            package_user_id: { type: integer }
+            package_id: { type: integer }
+            start_at: { type: string, format: date }
+            end_at: { type: string, format: date }
+    Period:
+      type: string
+      enum: [daily, weekly]
+      description: daily یعنی فردا؛ weekly یعنی هفت روز از فردا
+    PeriodRequest:
+      type: object
+      required: [period]
+      properties:
+        period: { $ref: '#/components/schemas/Period' }
+      example: { period: daily }
+    CheckItemRequest:
+      type: object
+      required: [item_key, is_checked]
+      properties:
+        item_key: { type: string, maxLength: 120, description: key قلم داخل result }
+        is_checked: { type: boolean }
+      example: { item_key: chicken-200g, is_checked: true }
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    ValidationError:
+      type: object
+      properties:
+        message: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+    ShoppingListResponse:
+      type: object
+      required: [status, shopping_list_id, uuid, period, start_date, end_date, message, result]
+      properties:
+        status: { type: string, enum: [pending, processing, ready, failed] }
+        shopping_list_id: { type: integer }
+        uuid: { type: string, format: uuid }
+        period: { $ref: '#/components/schemas/Period' }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        message: { type: string }
+        result:
+          nullable: true
+          allOf: [{ $ref: '#/components/schemas/ShoppingListResult' }]
+    ShoppingListResult:
+      type: object
+      required: [schema_version, engine, title, total_items, checked_items, progress_percent, groups]
+      properties:
+        schema_version: { type: integer, example: 1 }
+        engine: { type: string, enum: [openai, empty] }
+        prompt_version: { type: string, nullable: true, example: shopping-list-v1 }
+        title: { type: string }
+        total_items: { type: integer }
+        checked_items: { type: integer }
+        progress_percent: { type: integer, minimum: 0, maximum: 100 }
+        groups:
+          type: array
+          items: { $ref: '#/components/schemas/ShoppingGroup' }
+    ShoppingGroup:
+      type: object
+      required: [key, title, items]
+      properties:
+        key:
+          type: string
+          enum: [protein, dairy, vegetables, fruits, bread_grains, legumes, nuts_seeds, condiments, beverages, other]
+        title: { type: string }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ShoppingItem' }
+    ShoppingItem:
+      type: object
+      required: [key, name, quantity, unit, display_quantity, is_estimated, is_checked, sources]
+      properties:
+        key: { type: string }
+        name: { type: string }
+        quantity: { type: number, nullable: true }
+        unit: { type: string, nullable: true }
+        display_quantity: { type: string }
+        is_estimated: { type: boolean }
+        is_checked: { type: boolean }
+        sources:
+          type: array
+          items: { $ref: '#/components/schemas/ShoppingSource' }
+    ShoppingSource:
+      type: object
+      required: [date, meal, food_name]
+      properties:
+        date: { type: string, format: date }
+        meal: { type: string }
+        food_name: { type: string, description: نام غذای ترکیبی نهایی تجویزشده }

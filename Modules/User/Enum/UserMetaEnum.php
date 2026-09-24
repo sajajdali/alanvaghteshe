@@ -51,6 +51,8 @@ enum UserMetaEnum: int implements EnumHasNameInterface
     case TELEGRAM_CHAT_ID = 39;
     case LAST_SUPPORTER_CALLED = 40;
     case APPLY_TO_ALL_PAYMENTS = 41;
+    case WEIGHT_LOSS_MEDICATION = 42;
+    case FOOD_BUDGET = 43;
 
 
     public static function keys(): array
@@ -74,6 +76,8 @@ enum UserMetaEnum: int implements EnumHasNameInterface
             self::WEIGHT => 'وزن',
             self::TARGET_WEIGHT => 'وزن هدف',
             self::WEIGHT_CHANGE_PER_WEEK => 'میزان تغییر وزن در هفته',
+            self::WEIGHT_LOSS_MEDICATION => 'استفاده از داروهای کاهش وزن',
+            self::FOOD_BUDGET => 'بودجه برنامه غذایی',
 
             self::FIRST_NAME => 'نام',
             self::LAST_NAME => 'نام خانوادگی',
@@ -126,6 +130,9 @@ enum UserMetaEnum: int implements EnumHasNameInterface
             self::HOW_MANY_DAYS_WEEK_EXERCISE => ['0' => '۱ بار', '1' => ' ۲ بار' , '2' => ' ۳ بار' , '3' => ' ۴ بار' , '4' =>  '۵ بار' , '6' => ' ۶ بار'] ,
             self::DIET_PLAN => ['0' => ' کاهش وزن', '1' => 'افزایش وزن' , '2' => 'تثبیت وزن'] ,
             self::DISEASES => [ '' =>'بدون مقدار'] ,
+            self::WEIGHT_LOSS_MEDICATION => ['0' => 'استفاده نمی‌کنم', '1' => 'از داروهای کاهش وزن استفاده می‌کنم'],
+            self::FOOD_BUDGET => ['0' => 'اقتصادی و به‌صرفه', '1' => 'متعادل و متنوع', '2' => 'هزینه برام مهم نیست'],
+            self::WEIGHT_CHANGE_PER_WEEK => ['0' => 'استاندارد', '1' => 'سریع‌تر', '2' => 'خیلی سریع'],
             default => null
         };
     }

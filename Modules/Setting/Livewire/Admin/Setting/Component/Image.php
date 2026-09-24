@@ -2,25 +2,22 @@
 
 namespace Modules\Setting\Livewire\Admin\Setting\Component;
 
-use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 use Modules\Setting\Enum\SettingKeyEnum;
+use Illuminate\Support\Str;
 
 class Image extends Component
 {
+    use WithFileUploads;
+
     public mixed $image = null;
 
     public mixed $old_value;
 
     public SettingKeyEnum $meta;
 
-
-    #[On('imageChange')]
-    public function imageChange($newValue)
-    {
-        $this->image = $newValue;
-        $this->updatedImage();
-    }
 
     public function mount()
     {
@@ -31,7 +28,29 @@ class Image extends Component
 
     public function updatedImage()
     {
-        $this->dispatch('settingUpdateListener', settingKey:$this->meta->value, value:$this->image);
+        $this->validate([
+            'image' => ['required', 'file', 'mimes:png,jpg,jpeg,webp,svg', 'max:2048'],
+        ], [
+            'image.mimes' => 'فرمت آیکن باید PNG، JPG، WEBP یا SVG باشد.',
+            'image.max' => 'حجم آیکن نباید بیشتر از ۲ مگابایت باشد.',
+        ]);
+
+        if (! $this->image instanceof TemporaryUploadedFile) {
+            return;
+        }
+
+        $path = $this->image->storePubliclyAs(
+            'settings/icons',
+            Str::uuid().'.'.$this->image->getClientOriginalExtension(),
+            'public'
+        );
+
+        $this->image = '/storage/'.$path;
+        $this->dispatch(
+            'settingUpdateListener',
+            settingKey: $this->meta->value,
+            value: $this->image
+        );
     }
 
     public function render()

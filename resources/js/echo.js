@@ -1,0 +1,27 @@
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute('content');
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'eu',
+    wsHost: import.meta.env.VITE_PUSHER_HOST || 'broadcast.shemiranweb.com',
+    wsPort: Number(import.meta.env.VITE_PUSHER_PORT || 443),
+    wssPort: Number(import.meta.env.VITE_PUSHER_PORT || 443),
+    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME || 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+    disableStats: true,
+    authEndpoint: '/broadcasting/auth',
+    auth: {
+        headers: {
+            ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+            Accept: 'application/json',
+        },
+    },
+});

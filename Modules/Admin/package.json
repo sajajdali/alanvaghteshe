@@ -20,7 +20,8 @@
         "pusher-js": "^8.4.0-rc2",
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.49.9",
-        "sass-loader": "^12.1.0"
+        "sass-loader": "^12.1.0",
+        "webpack": "^5.98.0"
     },
     "dependencies": {
         "browser-sync": "^2.11.2",

@@ -39,6 +39,8 @@ enum SettingKeyEnum: int implements EnumHasNameInterface, SettingTypeInterface, 
     case SUPPORTER_INTEREST = 163;
 
     case WHATSAPP_MESSAGE_AFTER_LOGIN = 165;
+    case APP_SHOPPING_LIST_ACTIVE = 167;
+    case APP_SHOPPING_LIST_ICON = 168;
 
     public function isSupportCache(): bool
     {
@@ -79,6 +81,8 @@ enum SettingKeyEnum: int implements EnumHasNameInterface, SettingTypeInterface, 
             self::FREE_RECHARGE => 'شارژ رایگان (ریال)',
             self::NOTIFICATION_AFTER_LOGIN => 'پس از عضویت کاربر',
             self::WHATSAPP_MESSAGE_AFTER_LOGIN => 'پیام در واتس اپ پس از عضویت',
+            self::APP_SHOPPING_LIST_ACTIVE => 'فعال بودن سبد خرید در مشاهده رژیم',
+            self::APP_SHOPPING_LIST_ICON => 'آیکن سبد خرید در مشاهده رژیم',
             self::PAYMENT_SAMAN_TERMINAL_NO => 'شماره ترمینال درگاه سامان',
             self::PAYMENT_SAMAN_TERMINAL_PASS => ' رمز عبور ترمینال درگاه سامان',
             self::PAYMENT_ZARINPAL_MERCHENT => 'مرچنت درگاه زرین پال',
@@ -99,6 +103,8 @@ enum SettingKeyEnum: int implements EnumHasNameInterface, SettingTypeInterface, 
             self::SUPPORT_USER_ROLE             => SettingTypeEnum::SELECT,
             self::WEIGHT_CHART_DESCRIPTION_APP ,self::NOTIFICATION_AFTER_LOGIN , self::WHATSAPP_MESSAGE_AFTER_LOGIN => SettingTypeEnum::TEXTAREA,
             self::PAYMEN_ACTIVE_DRIVER          => SettingTypeEnum::SELECT,
+            self::APP_SHOPPING_LIST_ACTIVE      => SettingTypeEnum::SELECT,
+            self::APP_SHOPPING_LIST_ICON        => SettingTypeEnum::IMAGE,
             default                             => SettingTypeEnum::TEXT,
         };
     }
@@ -124,6 +130,7 @@ enum SettingKeyEnum: int implements EnumHasNameInterface, SettingTypeInterface, 
 //            self::DEFAULT_EXERCISE_STATUS => ExercisePlanRequest::getArrayForSetting(),
             self::SUPPORT_USER_ROLE => User::adminSupportRoles(),
             self::PAYMEN_ACTIVE_DRIVER => ['paystart' => 'paystart', 'saman' => 'saman' , 'zarinpal' => 'zarinpal'],
+            self::APP_SHOPPING_LIST_ACTIVE => [1 => 'فعال', 0 => 'غیرفعال'],
             default => []
         };
     }

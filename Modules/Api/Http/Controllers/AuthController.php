@@ -11,14 +11,15 @@ use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Api\Entities\AuthRequest;
 use Modules\Api\Entities\UserDevice;
 use Modules\Api\Enum\PopupEnum;
-use Modules\Api\Enum\RouteEnum;
 use Modules\Api\Enum\UserDeviceTypeEnum;
 use Modules\Api\Http\Requests\LoginRequest;
 use Modules\Api\Http\Requests\RegisterRequest;
+use Modules\Api\Support\RegistrationQuestions;
 use Modules\Api\Trait\ApiHandlerTrait;
 use Modules\Api\Transformers\UserResource;
 use Modules\Package\Entities\Package;
 use Modules\Package\Enum\PackageUserTypeEnum;
+use Modules\Onboarding\Service\OnboardingService;
 use Modules\Setting\Enum\SettingKeyEnum;
 use Modules\User\Entities\User;
 use Modules\User\Entities\UserMeta;
@@ -44,7 +45,7 @@ class AuthController extends Controller
         return $this->ok(['message' => 'success']);
     }
 
-    public function verify(RegisterRequest $request): \Illuminate\Http\JsonResponse
+    public function verify(RegisterRequest $request, OnboardingService $onboardingService): \Illuminate\Http\JsonResponse
     {
         $code = convertToLatinNumbers($request->input('code'));
         $emailOrMobile = $request->input('mobile') ?? $request->input('mobile_or_email'); //input is validated in AuthRequestCode
@@ -63,11 +64,14 @@ class AuthController extends Controller
                 'ip' => ip(),
             ]);
 
-
+            $nextStep = $onboardingService->decision($user);
 
             return $this->ok([
                 'message' => 'success',
                 'is_old_user' => isset($user->weight),
+                'user_status' => $nextStep['next_route'],
+                ...$nextStep,
+                'registration_questions' => RegistrationQuestions::all(),
                 'token' => $token,
                 'user' => UserResource::make($user),
             ]);
@@ -76,7 +80,7 @@ class AuthController extends Controller
         return $this->badRequest(data: ['message' => 'کد وارد شده صحیح نمی باشد']);
     }
 
-    public function storeDevice(Request $request)
+    public function storeDevice(Request $request, OnboardingService $onboardingService)
     {
         $user = auth()->user();
         $token = $request->header('Authorization');
@@ -92,22 +96,18 @@ class AuthController extends Controller
             'ip' => ip(),
         ]);
 
+        $nextStep = $onboardingService->decision($user);
+
         return $this->ok([
             'message' => 'success',
-            'user_status' => $this->handleNextStep($user),
+            'user_status' => $nextStep['next_route'],
+            ...$nextStep,
+            'registration_questions' => RegistrationQuestions::all(),
             'token' => $token,
             'user' => UserResource::make($user),
         ]);
     }
 
-    private function handleNextStep($user)
-    {
-        if (!$user->gender) {
-            return strtolower(RouteEnum::REGISTER->value);
-        }
-
-        return strtolower(RouteEnum::DASHBOARD->value);
-    }
     public function login(LoginRequest $request): \Illuminate\Http\JsonResponse
     {
 
@@ -122,6 +122,13 @@ class AuthController extends Controller
         }
 
         return $this->tooManyRequest(message: 'برای ارسال مجدد باید یک دقیقه صبر کنید');
+    }
+
+    public function registrationQuestions(): \Illuminate\Http\JsonResponse
+    {
+        return $this->ok([
+            'questions' => RegistrationQuestions::all(),
+        ]);
     }
 
     public function loginAndRegister(LoginRequest $request): \Illuminate\Http\JsonResponse
@@ -139,7 +146,11 @@ class AuthController extends Controller
         return $this->tooManyRequest(message: 'برای ارسال مجدد باید یک دقیقه صبر کنید');
     }
 
-    public function completeRegister(Request $request , SendUserWhatsappMessage $sendUserWhatsappMessage)
+    public function completeRegister(
+        Request $request,
+        SendUserWhatsappMessage $sendUserWhatsappMessage,
+        OnboardingService $onboardingService
+    )
     {
         $user = auth()->user(); //create or get user
 
@@ -149,6 +160,23 @@ class AuthController extends Controller
             $statement = json_decode($request->input('statement'));
             if (gettype($statement) <> "object") {
                 return $this->badRequest(data: ['message' => 'دیتای ارسالی با فرمت اشتباه ارسال شده است']);
+            }
+
+            $registrationData = validator((array) $statement, [
+                'weight_loss_medication' => ['sometimes', 'integer', 'in:0,1'],
+                'food_budget' => ['sometimes', 'integer', 'in:0,1,2'],
+                'weight_change_per_week' => ['sometimes', 'integer', 'in:0,1,2'],
+            ], [
+                'weight_loss_medication.in' => 'وضعیت استفاده از داروی کاهش وزن معتبر نیست.',
+                'food_budget.in' => 'بودجه برنامه غذایی معتبر نیست.',
+                'weight_change_per_week.in' => 'میزان تغییر وزن هفتگی معتبر نیست.',
+            ]);
+
+            if ($registrationData->fails()) {
+                return $this->badRequest(data: [
+                    'message' => $registrationData->errors()->first(),
+                    'errors' => $registrationData->errors(),
+                ]);
             }
             if (property_exists($statement , 'diet_type')){
                 $statement->diet_plan = $statement->diet_type;
@@ -299,12 +327,15 @@ class AuthController extends Controller
                 'name' => $user->full_name
             ]);
 
+        $user->refresh()->unsetRelation('metas');
+        $nextStep = $onboardingService->decision($user);
+
         return $this->ok(data: [
             'message' => 'اطلاعات با موفقیت ذخیره شد',
+            'user_status' => $nextStep['next_route'],
+            ...$nextStep,
         ]);
     }
 
 
 }
-
-

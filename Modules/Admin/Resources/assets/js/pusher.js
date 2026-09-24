@@ -4,7 +4,12 @@ import Pusher from 'pusher-js';
 window.Pusher = Pusher;
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: 'fa4fe3540c4368b08b57',
-    cluster: 'mt1',
-    forceTLS: true
+    key: process.env.MIX_PUSHER_APP_KEY,
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER || 'eu',
+    wsHost: process.env.MIX_PUSHER_HOST || 'broadcast.shemiranweb.com',
+    wsPort: Number(process.env.MIX_PUSHER_PORT || 443),
+    wssPort: Number(process.env.MIX_PUSHER_PORT || 443),
+    forceTLS: (process.env.MIX_PUSHER_SCHEME || 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+    disableStats: true
 });

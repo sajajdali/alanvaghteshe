@@ -39,6 +39,14 @@ trait ApiHandlerTrait
         ], JSON_UNESCAPED_UNICODE);//201
     }
 
+    public function accepted(mixed $data = []): \Illuminate\Http\JsonResponse
+    {
+        return response()->json($data, Response::HTTP_ACCEPTED, [
+            'Content-Type' => 'application/json;charset=UTF-8',
+            'Charset' => 'utf-8'
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
     public function badRequest(mixed $data = []): \Illuminate\Http\JsonResponse
     {
         return response()->json($data, Response::HTTP_BAD_REQUEST, [

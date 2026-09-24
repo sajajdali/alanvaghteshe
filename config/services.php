@@ -2,6 +2,12 @@
 
 return [
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_SHOPPING_LIST_MODEL', 'gpt-5-nano'),
+        'timeout' => (int) env('OPENAI_SHOPPING_LIST_TIMEOUT', 90),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services

@@ -1,0 +1,9 @@
+{
+    "name": "nwidart/onboarding",
+    "description": "Application onboarding offer management.",
+    "autoload": {
+        "psr-4": {
+            "Modules\\Onboarding\\": ""
+        }
+    }
+}

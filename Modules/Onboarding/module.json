@@ -1,0 +1,11 @@
+{
+    "name": "Onboarding",
+    "alias": "onboarding",
+    "description": "Manage the application onboarding offer.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Onboarding\\Providers\\OnboardingServiceProvider"
+    ],
+    "files": []
+}

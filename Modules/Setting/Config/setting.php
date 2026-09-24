@@ -69,6 +69,8 @@ return [
             \Modules\Setting\Enum\SettingKeyEnum::INVITE_FRIEND_BENEFIT,
             \Modules\Setting\Enum\SettingKeyEnum::INSTAGRAM,
             \Modules\Setting\Enum\SettingKeyEnum::FREE_RECHARGE,
+            \Modules\Setting\Enum\SettingKeyEnum::APP_SHOPPING_LIST_ACTIVE,
+            \Modules\Setting\Enum\SettingKeyEnum::APP_SHOPPING_LIST_ICON,
         ],
     ],
     'profile' => [

@@ -339,6 +339,11 @@ class User extends Authenticatable
         return $this->hasMany(\Modules\Diet\Entities\DietRequest::class);
     }
 
+    public function dietShoppingLists(): HasMany
+    {
+        return $this->hasMany(\Modules\Diet\Entities\DietShoppingList::class);
+    }
+
     public function invitedBy()
     {
         return $this->hasOne(InviteFriend::class, 'user_invited_id')->with('user');

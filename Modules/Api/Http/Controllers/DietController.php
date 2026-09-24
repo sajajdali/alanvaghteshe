@@ -28,6 +28,7 @@ use Modules\Diet\Entities\Meal;
 use Modules\Diet\Enum\DietRequestStatusEnum;
 use Modules\Diet\Enum\FoodTypeEnum;
 use Modules\Diet\Service\DietService;
+use Modules\Setting\Enum\SettingKeyEnum;
 use Modules\User\Entities\User;
 use Verta;
 
@@ -178,6 +179,7 @@ class DietController extends Controller
 //            'fasting' => $this->handleDietFasting($diet_request),
             'fasting' => app(DietService::class)->fastingDietStart($diet_request),
             'description' => isset($diet_request->dietPlan->detail['description']) ? $diet_request->dietPlan->detail['description'] : null,
+            'shopping_list' => $this->shoppingListSetting($diet_request),
             'cheat_meal' => [
                 'total_cheats' => app('dietService')->getCheatMealTotal($diet_request),
                 'completed_cheats' => $diet_request->dietRequestDetails()->cheatMeals()->count(),
@@ -206,6 +208,25 @@ class DietController extends Controller
         return $this->ok(array_merge($baseResponse, [
             'data' => $this->updateDaysData($result , $diet_request),
         ]));
+    }
+
+    /** @return array{active: bool, icon_url: ?string} */
+    private function shoppingListSetting(DietRequest $dietRequest): array
+    {
+        $configuredIcon = setting(SettingKeyEnum::APP_SHOPPING_LIST_ICON);
+
+        return [
+            'active' => filter_var(
+                setting(SettingKeyEnum::APP_SHOPPING_LIST_ACTIVE),
+                FILTER_VALIDATE_BOOLEAN
+            ) && (bool) $dietRequest->active
+                && $dietRequest->status === DietRequestStatusEnum::ACTIVE,
+            'icon_url' => $configuredIcon
+                ? (str_starts_with($configuredIcon, 'http://') || str_starts_with($configuredIcon, 'https://')
+                    ? $configuredIcon
+                    : asset(ltrim($configuredIcon, '/')))
+                : null,
+        ];
     }
 
     private function getUSerTarget(DietRequest $dietRequest)

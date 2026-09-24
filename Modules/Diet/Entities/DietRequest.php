@@ -126,6 +126,11 @@ class DietRequest extends Model
         return $this->hasMany(DietRequestDetail::class);
     }
 
+    public function shoppingLists(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DietShoppingList::class);
+    }
+
     public function getJsonEncodeOptions(): int
     {
         $options = parent::getJsonEncodeOptions();

@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 use Modules\User\app\Notifications\UserMessageNotification;
 use Modules\User\Entities\User;
 
+Route::get('/docs/shopping-list', [\Modules\Api\Http\Controllers\ShoppingListDocsController::class, 'index'])
+    ->name('shopping-list.docs');
+Route::get('/docs/shopping-list/openapi.yaml', [\Modules\Api\Http\Controllers\ShoppingListDocsController::class, 'specification'])
+    ->name('shopping-list.docs.specification');
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

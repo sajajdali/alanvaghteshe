@@ -128,6 +128,14 @@
                                     <li>
                                         <a href="#diet" data-bs-toggle="tab"> جزئیات رژیم تجویز شده</a>
                                     </li>
+                                    <li>
+                                        <a href="#shoppingLists" data-bs-toggle="tab">
+                                            سبدهای خرید
+                                            @if($shoppingLists->isNotEmpty())
+                                                <span class="badge bg-primary ms-1">{{ $shoppingLists->count() }}</span>
+                                            @endif
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -146,6 +154,13 @@
                     </div>
                     <div wire:ignore.self class="tab-pane" id='diet'>
                         <livewire:diet::admin.prescribed-diets.details.diet :dietRequest="$dietRequest"/>
+                    </div>
+                    <div wire:ignore.self class="tab-pane" id='shoppingLists'>
+                        @include('diet::livewire.admin.prescribed-diets.details.shopping-lists', [
+                            'shoppingLists' => $shoppingLists,
+                            'dietDays' => $dietDays,
+                            'selectedShoppingLists' => $selectedShoppingLists,
+                        ])
                     </div>
                 </div>
             </div><!-- COL-END -->

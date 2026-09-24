@@ -23,6 +23,9 @@ class Index extends Component
 
     #[Locked]
     public $dietReqestId;
+
+    #[Locked]
+    public string $selectedShoppingDate = '';
     public $dietErrors;
     public $dietRequest ;
 
@@ -129,12 +132,71 @@ class Index extends Component
             $this->dietErrors = null ;
         }
         $this->dietPlans = DietPlan::where('status',1)->get();
+
+        $dietDates = $diet_request->dietRequestDetails()
+            ->whereNull('replaced_parent_id')
+            ->whereNotNull('date_of_day')
+            ->orderBy('date_of_day')
+            ->pluck('date_of_day')
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
+            ->unique()
+            ->values();
+
+        $latestShoppingDate = $diet_request->shoppingLists()
+            ->latest('start_date')
+            ->value('start_date');
+
+        $this->selectedShoppingDate = $latestShoppingDate
+            ? Carbon::parse($latestShoppingDate)->toDateString()
+            : (string) ($dietDates->first() ?? '');
         // $this->details = $diet_request->dietRequestDetails()->groupBy('diet_request_details.main_nutrition')->get() ;
         // $this->details = DietRequestDetail::where('diet_request_id', $diet_request->id)->get()->groupBy('main_nutrition');
     }
+
+    public function selectShoppingDate(string $date): void
+    {
+        $isDietDay = $this->dietRequest->dietRequestDetails()
+            ->whereNull('replaced_parent_id')
+            ->whereDate('date_of_day', $date)
+            ->exists();
+
+        if ($isDietDay) {
+            $this->selectedShoppingDate = Carbon::parse($date)->toDateString();
+        }
+    }
+
     public function render()
     {
+        $shoppingLists = $this->dietRequest->shoppingLists()
+            ->orderByDesc('start_date')
+            ->orderByDesc('id')
+            ->get();
 
-        return view('diet::livewire.admin.prescribed-diets.details.index');
+        $dietDays = $this->dietRequest->dietRequestDetails()
+            ->whereNull('replaced_parent_id')
+            ->whereNotNull('date_of_day')
+            ->orderBy('date_of_day')
+            ->pluck('date_of_day')
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
+            ->unique()
+            ->values();
+
+        if ($this->selectedShoppingDate === '' && $dietDays->isNotEmpty()) {
+            $this->selectedShoppingDate = (string) $dietDays->first();
+        }
+
+        $selectedShoppingLists = $shoppingLists->filter(function ($shoppingList): bool {
+            if ($this->selectedShoppingDate === '') {
+                return false;
+            }
+
+            return $this->selectedShoppingDate === $shoppingList->start_date->toDateString();
+        })->values();
+
+        return view('diet::livewire.admin.prescribed-diets.details.index', [
+            'shoppingLists' => $shoppingLists,
+            'dietDays' => $dietDays,
+            'selectedShoppingLists' => $selectedShoppingLists,
+        ]);
     }
 }
