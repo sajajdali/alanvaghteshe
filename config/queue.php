@@ -39,8 +39,8 @@ return [
             'table' => 'jobs',
             'queue' => 'default',
             // Must stay greater than the longest queued job timeout (the
-            // shopping-list AI job currently allows up to 120 seconds).
-            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 150),
+            // shopping-list AI job currently allows up to 240 seconds).
+            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 300),
             'after_commit' => false,
         ],
 

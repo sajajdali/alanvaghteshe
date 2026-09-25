@@ -8,6 +8,30 @@ use Modules\Coupon\Entities\Coupon;
 use Modules\Onboarding\Enum\OnboardingModeEnum;
 use Modules\Package\Entities\Package;
 
+/**
+ * @property int $id
+ * @property bool $is_active
+ * @property OnboardingModeEnum $mode
+ * @property int|null $package_id
+ * @property int|null $coupon_id
+ * @property array<array-key, mixed>|null $contents
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Coupon|null $coupon
+ * @property-read Package|null $package
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereContents($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereCouponId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting wherePackageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OnboardingSetting whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class OnboardingSetting extends Model
 {
     protected $guarded = ['id'];

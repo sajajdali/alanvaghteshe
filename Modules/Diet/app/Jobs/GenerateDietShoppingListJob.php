@@ -3,6 +3,7 @@
 namespace Modules\Diet\app\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -15,7 +16,7 @@ use Modules\Diet\Service\OpenAiShoppingListService;
 use RuntimeException;
 use Throwable;
 
-class GenerateDietShoppingListJob implements ShouldQueue
+class GenerateDietShoppingListJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,8 +26,15 @@ class GenerateDietShoppingListJob implements ShouldQueue
     /** @var array<int, int> */
     public array $backoff = [5, 15, 30];
 
+    public int $uniqueFor = 600;
+
     public function __construct(public readonly int $shoppingListId)
     {
+    }
+
+    public function uniqueId(): string
+    {
+        return (string) $this->shoppingListId;
     }
 
     public function handle(

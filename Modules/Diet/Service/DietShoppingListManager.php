@@ -60,7 +60,10 @@ class DietShoppingListManager
             ];
         }
 
-        if ($result['created']) {
+        // A pending row may outlive its queued job after a worker/deployment
+        // interruption. Dispatching it again is safe because the job is unique
+        // per shopping-list ID while it is queued or running.
+        if ($result['shopping_list']->status === ShoppingListStatusEnum::PENDING) {
             GenerateDietShoppingListJob::dispatch($result['shopping_list']->getKey())
                 ->onQueue('ai-shopping-list')
                 ->afterCommit();

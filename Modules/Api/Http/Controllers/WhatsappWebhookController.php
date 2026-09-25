@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Modules\Admin\app\Events\WhatsappMessageReceived;
 use Modules\Admin\app\Models\WhatsappMedia;
 use Modules\Admin\app\Models\WhatsappMessage;
 
@@ -119,9 +118,6 @@ class WhatsappWebhookController extends Controller
         if ($hasMedia) {
             $this->handleMediaDownloadAndPersist($message->id, $msg, $data, $filename, $mime);
         }
-
-        // (اختیاری) برودکست
-        broadcast(new WhatsappMessageReceived($request->all()));
 
         return response()->json(['status' => 'ok']);
     }

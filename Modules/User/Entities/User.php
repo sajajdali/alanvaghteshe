@@ -170,6 +170,8 @@ use Verta;
  * @property-read int|null $whatsapp_messages_count
  * @property-read Collection<int, CourseUser> $courses
  * @property-read int|null $courses_count
+ * @property-read Collection<int, \Modules\Diet\Entities\DietShoppingList> $dietShoppingLists
+ * @property-read int|null $diet_shopping_lists_count
  * @mixin \Eloquent
  */
 class User extends Authenticatable

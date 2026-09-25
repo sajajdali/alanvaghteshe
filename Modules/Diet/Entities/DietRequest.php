@@ -55,6 +55,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|DietRequest withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|DietRequest withoutTrashed()
  * @method static Builder<static>|DietRequest successfulDiet()
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Modules\Diet\Entities\DietShoppingList> $shoppingLists
+ * @property-read int|null $shopping_lists_count
  * @mixin \Eloquent
  */
 class DietRequest extends Model
