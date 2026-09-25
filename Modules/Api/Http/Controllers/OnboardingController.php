@@ -5,7 +5,6 @@ namespace Modules\Api\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Modules\Api\Trait\ApiHandlerTrait;
-use Modules\Api\Enum\RouteEnum;
 use Modules\Onboarding\Service\OnboardingService;
 use RuntimeException;
 
@@ -26,9 +25,11 @@ class OnboardingController extends Controller
             return $this->badRequest(['message' => $exception->getMessage()]);
         }
 
+        $nextStep = $service->decision(auth()->user()->refresh());
+
         return $this->created([
             'message' => 'پکیج رایگان با موفقیت فعال شد.',
-            'next_route' => RouteEnum::PROFILE->value,
+            'next_route' => $nextStep['next_route'],
             'package' => [
                 'package_user_id' => $packageUser->getKey(),
                 'package_id' => $packageUser->package_id,

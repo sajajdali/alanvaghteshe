@@ -67,7 +67,7 @@ paths:
     get:
       tags: [Onboarding]
       summary: تعیین نمایش Onboarding و دریافت محتوای آن
-      description: مسیر یکپارچه عضویت را برمی‌گرداند؛ ثبت‌نام ناقص به /statement، کاربر بدون عضویت به /onboarding و عضو فعال به /profile می‌رود.
+      description: مسیر یکپارچه عضویت را برمی‌گرداند؛ اگر Onboarding فعال باشد بلافاصله بعد از Verify نمایش داده می‌شود و continue_route مسیر بعد از آن را مشخص می‌کند.
       operationId: getOnboarding
       security: [{ sanctumBearer: [] }]
       responses:
@@ -266,21 +266,23 @@ components:
         appmetrica_profile_id: { type: string, nullable: true }
     VerifyResponse:
       type: object
-      required: [message, token, user, user_status, show_onboarding, next_route]
+      required: [message, token, user, user_status, show_onboarding, next_route, continue_route]
       properties:
         message: { type: string }
         is_old_user: { type: boolean }
         show_onboarding: { type: boolean, description: فقط برای کاربر فاقد پکیج فعال و در صورت فعال‌بودن تنظیم CRM مقدار true دارد }
         user_status: { type: string, enum: [/statement, /onboarding, /profile], description: سازگار با مسیر مراحل عضویت اپ }
         next_route: { type: string, enum: [/statement, /onboarding, /profile] }
+        continue_route: { type: string, enum: [/statement, /profile], description: مسیر بعد از پایان یا ردکردن Onboarding }
         token: { type: string, description: Sanctum Personal Access Token }
         user: { type: object, additionalProperties: true }
     OnboardingResponse:
       type: object
-      required: [show_onboarding, next_route, mode, content, offer]
+      required: [show_onboarding, next_route, continue_route, mode, content, offer]
       properties:
         show_onboarding: { type: boolean }
         next_route: { type: string, enum: [/statement, /onboarding, /profile] }
+        continue_route: { type: string, enum: [/statement, /profile], description: مسیر بعد از ردکردن یا تمام‌کردن Onboarding }
         mode:
           type: string
           nullable: true
@@ -318,7 +320,7 @@ components:
       required: [message, next_route, package]
       properties:
         message: { type: string }
-        next_route: { type: string, enum: [/profile] }
+        next_route: { type: string, enum: [/statement, /profile], description: برای کاربر جدید ادامه ثبت‌نام و برای کاربر کامل‌شده پروفایل }
         package:
           type: object
           required: [package_user_id, package_id, start_at, end_at]

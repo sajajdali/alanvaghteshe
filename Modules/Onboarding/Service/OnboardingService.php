@@ -14,24 +14,23 @@ use RuntimeException;
 
 class OnboardingService
 {
-    /** @return array{show_onboarding: bool, next_route: string} */
+    /** @return array{show_onboarding: bool, next_route: string, continue_route: string} */
     public function decision(User $user): array
     {
         $setting = OnboardingSetting::current();
         $isMember = $user->activePackage() !== null;
+        $continueRoute = $user->weight === null
+            ? RouteEnum::REGISTER->value
+            : RouteEnum::PROFILE->value;
 
-        if ($user->weight === null) {
-            return [
-                'show_onboarding' => false,
-                'next_route' => RouteEnum::REGISTER->value,
-            ];
-        }
+        $showOnboarding = $setting->is_active && ! $isMember;
 
         return [
-            'show_onboarding' => $setting->is_active && ! $isMember,
-            'next_route' => $setting->is_active && ! $isMember
+            'show_onboarding' => $showOnboarding,
+            'next_route' => $showOnboarding
                 ? RouteEnum::ONBOARDING->value
-                : RouteEnum::PROFILE->value,
+                : $continueRoute,
+            'continue_route' => $continueRoute,
         ];
     }
 
