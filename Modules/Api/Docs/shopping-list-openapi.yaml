@@ -368,8 +368,14 @@ components:
         shopping_list_id: { type: integer }
         uuid: { type: string, format: uuid }
         period: { $ref: '#/components/schemas/Period' }
-        start_date: { type: string, format: date }
-        end_date: { type: string, format: date }
+        start_date:
+          type: string
+          example: '۱۴۰۵-۰۷-۰۴'
+          description: تاریخ شروع شمسی با ارقام فارسی و ترتیب سال-ماه-روز
+        end_date:
+          type: string
+          example: '۱۴۰۵-۰۷-۰۴'
+          description: تاریخ پایان شمسی با ارقام فارسی و ترتیب سال-ماه-روز
         message: { type: string }
         result:
           nullable: true

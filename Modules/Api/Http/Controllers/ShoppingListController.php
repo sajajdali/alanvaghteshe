@@ -126,8 +126,8 @@ class ShoppingListController extends Controller
             'shopping_list_id' => $shoppingList->getKey(),
             'uuid' => $shoppingList->uuid,
             'period' => $shoppingList->period->value,
-            'start_date' => $shoppingList->start_date->toDateString(),
-            'end_date' => $shoppingList->end_date->toDateString(),
+            'start_date' => (string) jdate('Y-m-d', $shoppingList->start_date->timestamp),
+            'end_date' => (string) jdate('Y-m-d', $shoppingList->end_date->timestamp),
             'message' => match ($shoppingList->status) {
                 ShoppingListStatusEnum::PENDING => 'درخواست ساخت سبد خرید در صف پردازش است.',
                 ShoppingListStatusEnum::PROCESSING => 'سبد خرید در حال محاسبه است.',
