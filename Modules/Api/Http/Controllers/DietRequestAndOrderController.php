@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Modules\Diet\Entities\Condition;
 use Modules\Diet\Entities\DietPlan;
+use Modules\Diet\Entities\DietPlanSuggestion;
 use Modules\Diet\Enum\ConditionKeyEnum;
 
 class DietRequestAndOrderController extends Controller
@@ -56,10 +57,29 @@ class DietRequestAndOrderController extends Controller
         return [
             'user' => $user->id,
             'target_page' => $target_page,
+            'suggested_plan_id' => $this->getSuggestedPlanId($user),
             'select_diet_plan' => $result,
             'get_weight' => $this->getWeight($user),
             'support_page' => $this->supportPage()
         ];
+    }
+
+    private function getSuggestedPlanId($user): ?int
+    {
+        $budget = $user->food_budget_meta?->last()?->meta_value;
+
+        if ($budget === null) {
+            return null;
+        }
+
+        $weightLossMedication = $user->weight_loss_medication_meta?->last()?->meta_value;
+        $sessionNumber = $user->dietRequests()->successfulDiet()->count() + 1;
+
+        return DietPlanSuggestion::suggestedPlanFor(
+            (int) $budget,
+            $sessionNumber,
+            $weightLossMedication === null ? null : (int) $weightLossMedication
+        )?->id;
     }
 
     private function getWeight($user)
