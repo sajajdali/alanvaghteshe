@@ -48,6 +48,16 @@ return [
                 'has_child' => false,
                 'children' => null,
             ],
+            [
+                'title' => 'بسته‌های رایگان اهدایی',
+                'gate' => 'viewAny',
+                'policy_class' => \Modules\Package\Entities\Package::class,
+                'icon' => 'fe fe-thumbs-up',
+                'route' => 'admin.package.gifted',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
         ],
     ],
 ];

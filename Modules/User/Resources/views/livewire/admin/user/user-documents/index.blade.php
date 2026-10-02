@@ -280,6 +280,26 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
+                                                    <td><strong>بودجه برنامه غذایی:</strong>
+                                                        {{ $user->metaOptionsNames('food_budget_meta') }}
+                                                    </td>
+                                                </tr>
+                                                @php
+                                                    $usesWeightLossMedication = $user->weight_loss_medication_meta?->last()?->meta_value;
+                                                @endphp
+                                                @if($usesWeightLossMedication !== null)
+                                                    <tr class="{{ (int) $usesWeightLossMedication === 1 ? 'table-warning' : '' }}">
+                                                        <td>
+                                                            <strong>استفاده از آمپول یا داروی لاغری:</strong>
+                                                            @if((int) $usesWeightLossMedication === 1)
+                                                                <span class="badge bg-warning text-dark">استفاده می‌کند</span>
+                                                            @else
+                                                                <span class="badge bg-success">استفاده نمی‌کند</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                                <tr>
                                                     <td><strong>وزن هدف:</strong>
                                                         {{ $user->targetWeightMeta->last()?->meta_value ?? '--' }}
 

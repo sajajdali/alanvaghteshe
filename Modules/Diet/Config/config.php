@@ -289,6 +289,16 @@ return [
 
             ],
             [
+                'title' => 'پیشنهاد رژیم',
+                'gate' => 'viewAny',
+                'policy_class' => \Modules\Diet\Entities\DietPlan::class,
+                'icon' => 'fe fe-thumbs-up',
+                'route' => 'admin.diet_plan.suggestions',
+                'has_badge' => false,
+                'has_child' => false,
+                'children' => null,
+            ],
+            [
                 'title' => 'دستور غذا',
                 'gate' => 'viewAny',
                 'policy_class' => \Modules\Diet\Entities\DietPlan::class,

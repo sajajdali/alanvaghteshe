@@ -132,6 +132,16 @@
                         </select>
                     </div>
 
+                    <div class="col-md-4">
+                        <label class="form-label">بودجه برنامه غذایی</label>
+                        <select class="form-select" wire:model="form.food_budget">
+                            <option value="">انتخاب کنید</option>
+                            @foreach($foodBudgetOptions as $k => $v)
+                                <option value="{{ $k }}">{{ $v }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     {{--                    <div class="col-md-4">--}}
                     {{--                        <label class="form-label">کد دعوت</label>--}}
                     {{--                        <input class="form-control" wire:model="form.invitation_code" placeholder="اختیاری">--}}

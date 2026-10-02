@@ -6,6 +6,7 @@ use Livewire\Component;
 use Modules\User\Entities\User;
 use Modules\Diet\Entities\DietPlan;
 use Modules\Diet\Entities\DietRequest;
+use Modules\Diet\Entities\DietPlanSuggestion;
 use Modules\Setting\Enum\SettingKeyEnum;
 use Modules\Reminder\Enum\ReminderTypeEnum;
 use Modules\Reminder\Enum\ReminderStatusEnum;
@@ -63,6 +64,23 @@ class AssignDiet extends Component
 
     public function findSuggestedDiet()
     {
+        $budget = $this->user->food_budget_meta?->last()?->meta_value;
+        $weightLossMedication = $this->user->weight_loss_medication_meta?->last()?->meta_value;
+        $sessionNumber = $this->user->dietRequests()->successfulDiet()->count() + 1;
+        $configuredPlan = $budget !== null
+            ? DietPlanSuggestion::suggestedPlanFor(
+                (int) $budget,
+                $sessionNumber,
+                $weightLossMedication === null ? null : (int) $weightLossMedication
+            )
+            : null;
+
+        if ($configuredPlan) {
+            $this->suggestedDiet = $configuredPlan->id;
+            $this->selectedDiet = $configuredPlan->id;
+            return;
+        }
+
         $conditions = app('dietService')->getUserConditions($this->user, true);
         $dietPlans  = app('dietService')->getDietPlans($conditions);
         $this->suggestedDiet = $dietPlans->first()?->id;

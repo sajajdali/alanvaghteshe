@@ -37,6 +37,9 @@ Route::get('condition/edit/{condition}', ConditionCreateOrUpdate::class)->name('
 Route::get('diet_plan', \Modules\Diet\Livewire\Admin\Plan\DietPlanList::class)->name('diet_plan.index')->can('viewAny', \Modules\Diet\Entities\DietPlan::class);
 Route::get('diet_plan/create', DietPlanCreateOrUpdate::class)->name('diet_plan.create')->can('create', \Modules\Diet\Entities\DietPlan::class);
 Route::get('diet_plan/edit/{diet_plan}', DietPlanCreateOrUpdate::class)->name('diet_plan.edit');
+Route::get('diet_plan-suggestions', \Modules\Diet\Livewire\Admin\Plan\DietPlanSuggestionList::class)
+    ->name('diet_plan.suggestions')
+    ->can('viewAny', \Modules\Diet\Entities\DietPlan::class);
 
 Route::get('recipe/create', RecipeUpdateOrCreate::class)->name('recipe.create');
 Route::get('recipe/list', RecipeList::class)->name('recipe.list');

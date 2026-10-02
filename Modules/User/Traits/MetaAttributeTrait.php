@@ -52,6 +52,21 @@ trait MetaAttributeTrait
             get: fn () => $this->getMetas(UserMetaEnum::TARGET_PLAN),
         );
     }
+
+    public function foodBudgetMeta(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getMetas(UserMetaEnum::FOOD_BUDGET),
+        );
+    }
+
+    public function weightLossMedicationMeta(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getMetas(UserMetaEnum::WEIGHT_LOSS_MEDICATION),
+        );
+    }
+
     public function dailyWaterConsumptionMeta(): Attribute
     {
         return Attribute::make(

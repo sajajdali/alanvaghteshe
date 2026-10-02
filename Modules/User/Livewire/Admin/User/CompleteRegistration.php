@@ -27,6 +27,7 @@ class CompleteRegistration extends Component
         'weight' => null,
         'target_weight' => null,
         'weight_change_per_week' => 1,
+        'food_budget' => null,
         'invitation_code' => '',
         'target_plan' => 10, // پیشفرض
         'action' => 1,
@@ -61,6 +62,12 @@ class CompleteRegistration extends Component
         0 => 'کم',
         1 => 'متوسط',
         2 => 'زیاد',
+    ];
+
+    public array $foodBudgetOptions = [
+        0 => 'اقتصادی و به‌صرفه',
+        1 => 'متعادل و متنوع',
+        2 => 'هزینه برام مهم نیست',
     ];
 
     public array $targetPlanOptions = [
@@ -131,7 +138,7 @@ class CompleteRegistration extends Component
         // بعضی فیلدها عددی هستن
         $castIntFields = [
             'diet_type', 'gender', 'athlete_or_not', 'activity_per_week',
-            'weight_change_per_week', 'target_plan', 'action',
+            'weight_change_per_week', 'food_budget', 'target_plan', 'action',
         ];
 
         // اگه json باشه (birthday / arrays)
