@@ -14,6 +14,20 @@ use RuntimeException;
 
 class OnboardingService
 {
+    public function activeReward(User $user): ?OnboardingReward
+    {
+        $activePackage = $user->activePackage();
+
+        if (! $activePackage) {
+            return null;
+        }
+
+        return OnboardingReward::query()
+            ->where('user_id', $user->getKey())
+            ->where('package_user_id', $activePackage->getKey())
+            ->first();
+    }
+
     /** @return array{show_onboarding: bool, next_route: string, continue_route: string} */
     public function decision(User $user): array
     {

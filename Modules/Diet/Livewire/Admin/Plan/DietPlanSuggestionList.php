@@ -16,8 +16,12 @@ class DietPlanSuggestionList extends Component
     #[Url]
     public string $filterBudget = '';
 
+    #[Url]
+    public string $filterDietType = '';
+
     public ?int $editingId = null;
     public string $foodBudget = '';
+    public string $dietType = '';
     public string $weightLossMedication = '';
     public string $sessionFrom = '';
     public string $sessionTo = '';
@@ -27,6 +31,7 @@ class DietPlanSuggestionList extends Component
     {
         $validated = $this->validate([
             'foodBudget' => ['required', 'integer', Rule::in([0, 1, 2])],
+            'dietType' => ['nullable', Rule::in(['', '0', '1', '2'])],
             'weightLossMedication' => ['nullable', Rule::in(['', '0', '1'])],
             'sessionFrom' => ['required', 'integer', 'min:1'],
             'sessionTo' => ['required', 'integer', 'gte:sessionFrom'],
@@ -37,6 +42,14 @@ class DietPlanSuggestionList extends Component
 
         $overlaps = DietPlanSuggestion::query()
             ->where('food_budget', $validated['foodBudget'])
+            ->where(function ($query) use ($validated) {
+                $dietType = $validated['dietType'] ?? '';
+                if ($dietType === '') {
+                    $query->whereNull('diet_type');
+                } else {
+                    $query->where('diet_type', (int) $dietType);
+                }
+            })
             ->where(function ($query) use ($validated) {
                 $medication = $validated['weightLossMedication'] ?? '';
                 if ($medication === '') {
@@ -51,12 +64,15 @@ class DietPlanSuggestionList extends Component
             ->exists();
 
         if ($overlaps) {
-            $this->addError('sessionFrom', 'این بازه جلسه برای بودجه انتخابی با یک قاعده دیگر هم‌پوشانی دارد.');
+            $this->addError('sessionFrom', 'این بازه جلسه برای بودجه، هدف و وضعیت داروی انتخابی با یک قاعده دیگر هم‌پوشانی دارد.');
             return;
         }
 
         DietPlanSuggestion::updateOrCreate(['id' => $this->editingId], [
             'food_budget' => $validated['foodBudget'],
+            'diet_type' => ($validated['dietType'] ?? '') === ''
+                ? null
+                : (int) $validated['dietType'],
             'weight_loss_medication' => ($validated['weightLossMedication'] ?? '') === ''
                 ? null
                 : (int) $validated['weightLossMedication'],
@@ -74,6 +90,7 @@ class DietPlanSuggestionList extends Component
         $item = DietPlanSuggestion::findOrFail($id);
         $this->editingId = $item->id;
         $this->foodBudget = (string) $item->food_budget;
+        $this->dietType = $item->diet_type === null ? '' : (string) $item->diet_type;
         $this->weightLossMedication = $item->weight_loss_medication === null
             ? ''
             : (string) $item->weight_loss_medication;
@@ -94,7 +111,7 @@ class DietPlanSuggestionList extends Component
 
     public function resetForm(): void
     {
-        $this->reset(['editingId', 'foodBudget', 'weightLossMedication', 'sessionFrom', 'sessionTo', 'dietPlanId']);
+        $this->reset(['editingId', 'foodBudget', 'dietType', 'weightLossMedication', 'sessionFrom', 'sessionTo', 'dietPlanId']);
         $this->resetValidation();
     }
 
@@ -104,7 +121,10 @@ class DietPlanSuggestionList extends Component
             ->with('dietPlan')
             ->when($this->filterBudget !== '', fn ($query) => $query
                 ->where('food_budget', (int) $this->filterBudget))
+            ->when($this->filterDietType !== '', fn ($query) => $query
+                ->where('diet_type', (int) $this->filterDietType))
             ->orderBy('food_budget')
+            ->orderBy('diet_type')
             ->orderBy('session_from')
             ->get();
 
@@ -112,6 +132,7 @@ class DietPlanSuggestionList extends Component
             'suggestions' => $suggestions,
             'dietPlans' => DietPlan::active()->specificPattern()->orderBy('name')->get(),
             'budgetOptions' => UserMetaEnum::FOOD_BUDGET->getOptions(),
+            'dietTypeOptions' => UserMetaEnum::DIET_TYPE->getOptions(),
             'medicationOptions' => UserMetaEnum::WEIGHT_LOSS_MEDICATION->getOptions(),
         ]);
     }

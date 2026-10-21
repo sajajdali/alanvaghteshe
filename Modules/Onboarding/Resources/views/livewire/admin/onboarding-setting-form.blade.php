@@ -81,7 +81,7 @@
                                 <option value="">انتخاب پکیج</option>
                                 @foreach($packages as $package)
                                     <option value="{{ $package->id }}">
-                                        {{ $package->name }} — {{ $package->days }} روز — {{ $package->type->getName() }}
+                                        {{ $package->name }} — {{ $package->days }} روز — {{ $package->type->getName() }}{{ $package->is_active ? '' : ' — غیرفعال' }}
                                     </option>
                                 @endforeach
                             </select>

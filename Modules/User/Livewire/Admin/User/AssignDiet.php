@@ -71,7 +71,8 @@ class AssignDiet extends Component
             ? DietPlanSuggestion::suggestedPlanFor(
                 (int) $budget,
                 $sessionNumber,
-                $weightLossMedication === null ? null : (int) $weightLossMedication
+                $weightLossMedication === null ? null : (int) $weightLossMedication,
+                $this->user->diet_type === null ? null : (int) $this->user->diet_type
             )
             : null;
 

@@ -119,7 +119,9 @@ class PackageUpdateOrCreate extends Component
     {
         $this->validate();
         if ($this->isEdited) {
-            $detail = $this->package->detail;
+            // Some older packages have a null detail column. Normalize it before
+            // adding or removing optional detail fields such as api_url.
+            $detail = $this->package->detail ?? [];
             if (isset($this->apiUrl) && $this->apiUrl != ""){
                 $detail['api_url'] = $this->apiUrl;
             } else {

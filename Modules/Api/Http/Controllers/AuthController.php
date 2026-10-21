@@ -279,7 +279,7 @@ class AuthController extends Controller
                 $user->metas()->saveMany($listMetas);
             }
 
-            if ($freeRecharge = (int) setting(SettingKeyEnum::FREE_RECHARGE)) {
+            if (config('app.free_registration_recharge_enabled') && ($freeRecharge = (int) setting(SettingKeyEnum::FREE_RECHARGE))) {
                 if ($freeRecharge > 0) {
                     if ($user->wallet == 0){
                         $user->increaseWallet($freeRecharge);

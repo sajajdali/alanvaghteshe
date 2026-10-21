@@ -108,7 +108,7 @@ class OnboardingSettingForm extends Component
     {
         return view('onboarding::livewire.admin.onboarding-setting-form', [
             'modes' => OnboardingModeEnum::cases(),
-            'packages' => Package::query()->active()->priority()->get(['id', 'name', 'days', 'type']),
+            'packages' => Package::query()->priority()->get(['id', 'name', 'days', 'type', 'is_active']),
             'coupons' => Coupon::query()->active()->orderByDesc('id')->get(['id', 'title', 'code', 'value', 'is_percent']),
         ]);
     }

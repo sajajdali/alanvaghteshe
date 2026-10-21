@@ -43,7 +43,7 @@ class DietRequestAndOrderController extends Controller
         }
 
         $getWeightPage = null;
-        if ($user->activePackage() && $user->activePackage()->package->id != 4){
+        if ($user->activePackage()) {
             $target_page = 'new_diet';
         } else {
 //            if ($user->dietRequests()->count()){
@@ -78,7 +78,8 @@ class DietRequestAndOrderController extends Controller
         return DietPlanSuggestion::suggestedPlanFor(
             (int) $budget,
             $sessionNumber,
-            $weightLossMedication === null ? null : (int) $weightLossMedication
+            $weightLossMedication === null ? null : (int) $weightLossMedication,
+            $user->diet_type === null ? null : (int) $user->diet_type
         )?->id;
     }
 

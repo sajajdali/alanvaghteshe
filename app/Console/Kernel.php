@@ -7,8 +7,11 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Modules\Diet\app\Console\ChangeFoodRestriction;
 use Modules\Diet\app\Console\CreateDietSample;
 use Modules\Diet\app\Console\DisableExpiredDietRequests;
+use Modules\Diet\app\Console\SyncFoodDietPattern;
+use Modules\Diet\app\Console\SyncWeightLossMedicationFoods;
 use Modules\Diet\Console\ConvertRecipeKarafsCommand;
 use Modules\Diet\Console\CreateDietCommand;
+use Modules\Recipe\app\Console\ExportRecipesJson;
 use Modules\Recipe\app\Console\FixRecipeData;
 use Modules\Recipe\app\Console\RecipeInsertDatabase;
 use Modules\Reminder\app\Console\SendReminderscommand;
@@ -21,8 +24,11 @@ class Kernel extends ConsoleKernel
         CreateDietSample::class,
         DisableExpiredDietRequests::class,
         RecipeInsertDatabase::class,
+        ExportRecipesJson::class,
         FixRecipeData::class,
         ChangeFoodRestriction::class,
+        SyncFoodDietPattern::class,
+        SyncWeightLossMedicationFoods::class,
         SendReminderscommand::class
     ];
 

@@ -1,5 +1,5 @@
 <div>
-    <div class="page-header"><div><h1 class="page-title">پیشنهاد رژیم</h1><div class="text-muted mt-1">انتخاب پلن رژیم بر اساس بودجه کاربر و شماره جلسه</div></div></div>
+    <div class="page-header"><div><h1 class="page-title">پیشنهاد رژیم</h1><div class="text-muted mt-1">انتخاب پلن رژیم بر اساس بودجه، هدف کاربر، وضعیت داروی لاغری و شماره جلسه</div></div></div>
 
     @include('admin::layouts.components.alert')
 
@@ -16,7 +16,15 @@
                         </select>
                         @error('foodBudget')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <label class="form-label">هدف</label>
+                        <select class="form-select @error('dietType') is-invalid @enderror" wire:model="dietType">
+                            <option value="">مهم نیست</option>
+                            @foreach($dietTypeOptions as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach
+                        </select>
+                        @error('dietType')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-2">
                         <label class="form-label">آمپول یا داروی لاغری</label>
                         <select class="form-select @error('weightLossMedication') is-invalid @enderror" wire:model="weightLossMedication">
                             <option value="">مهم نیست</option>
@@ -36,7 +44,7 @@
                         <input type="number" min="1" class="form-control @error('sessionTo') is-invalid @enderror" wire:model="sessionTo">
                         @error('sessionTo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label">پلن رژیم</label>
                         <select class="form-select @error('dietPlanId') is-invalid @enderror" wire:model="dietPlanId">
                             <option value="">انتخاب کنید</option>
@@ -57,9 +65,9 @@
         <div class="card-header border-bottom d-flex align-items-end justify-content-between flex-wrap gap-3">
             <div>
                 <h3 class="card-title">قواعد پیشنهاد</h3>
-                <div class="text-muted mt-1">تنوع پلن‌ها و بازه جلسات هر سطح بودجه</div>
+                <div class="text-muted mt-1">تنوع پلن‌ها و بازه جلسات بر اساس بودجه و هدف</div>
             </div>
-            <div style="min-width: 280px">
+            <div style="min-width: 240px">
                 <label for="suggestion-budget-filter" class="form-label">فیلتر بر اساس بودجه</label>
                 <select id="suggestion-budget-filter" class="form-select" wire:model.live="filterBudget">
                     <option value="">همه تنوع‌ها</option>
@@ -68,14 +76,24 @@
                     @endforeach
                 </select>
             </div>
+            <div style="min-width: 240px">
+                <label for="suggestion-diet-type-filter" class="form-label">فیلتر بر اساس هدف</label>
+                <select id="suggestion-diet-type-filter" class="form-select" wire:model.live="filterDietType">
+                    <option value="">همه هدف‌ها</option>
+                    @foreach($dietTypeOptions as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered align-middle mb-0">
-                <thead><tr><th>بودجه</th><th>آمپول/داروی لاغری</th><th>جلسات</th><th>پلن پیشنهادی</th><th>عملیات</th></tr></thead>
+                <thead><tr><th>بودجه</th><th>هدف</th><th>آمپول/داروی لاغری</th><th>جلسات</th><th>پلن پیشنهادی</th><th>عملیات</th></tr></thead>
                 <tbody>
                 @forelse($suggestions as $item)
                     <tr wire:key="diet-suggestion-{{ $item->id }}">
                         <td>{{ $budgetOptions[$item->food_budget] ?? '---' }}</td>
+                        <td>{{ $item->diet_type === null ? 'مهم نیست' : ($dietTypeOptions[$item->diet_type] ?? '---') }}</td>
                         <td>
                             {{ $item->weight_loss_medication === null
                                 ? 'مهم نیست'
@@ -89,7 +107,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-center text-muted py-5">هنوز قاعده‌ای ثبت نشده است.</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-5">هنوز قاعده‌ای ثبت نشده است.</td></tr>
                 @endforelse
                 </tbody>
             </table>
