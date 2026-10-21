@@ -166,10 +166,12 @@ class AuthController extends Controller
                 'weight_loss_medication' => ['sometimes', 'integer', 'in:0,1'],
                 'food_budget' => ['sometimes', 'integer', 'in:0,1,2'],
                 'weight_change_per_week' => ['sometimes', 'integer', 'in:0,1,2'],
+                'athlete_or_not' => ['sometimes', 'integer', 'in:0,1'],
             ], [
                 'weight_loss_medication.in' => 'وضعیت استفاده از داروی کاهش وزن معتبر نیست.',
                 'food_budget.in' => 'بودجه برنامه غذایی معتبر نیست.',
                 'weight_change_per_week.in' => 'میزان تغییر وزن هفتگی معتبر نیست.',
+                'athlete_or_not.in' => 'وضعیت ورزش کردن معتبر نیست.',
             ]);
 
             if ($registrationData->fails()) {

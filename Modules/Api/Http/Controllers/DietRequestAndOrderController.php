@@ -79,7 +79,8 @@ class DietRequestAndOrderController extends Controller
             (int) $budget,
             $sessionNumber,
             $weightLossMedication === null ? null : (int) $weightLossMedication,
-            $user->diet_type === null ? null : (int) $user->diet_type
+            $user->diet_type === null ? null : (int) $user->diet_type,
+            $user->athlete_or_not === null ? null : (int) $user->athlete_or_not
         )?->id;
     }
 

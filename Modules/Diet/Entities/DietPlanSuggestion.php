@@ -12,6 +12,7 @@ class DietPlanSuggestion extends Model
         'food_budget' => 'integer',
         'diet_type' => 'integer',
         'weight_loss_medication' => 'integer',
+        'athlete_or_not' => 'integer',
         'session_from' => 'integer',
         'session_to' => 'integer',
     ];
@@ -25,7 +26,8 @@ class DietPlanSuggestion extends Model
         int $foodBudget,
         int $sessionNumber,
         ?int $weightLossMedication = null,
-        ?int $dietType = null
+        ?int $dietType = null,
+        ?int $athleteOrNot = null
     ): ?DietPlan
     {
         return static::query()
@@ -45,9 +47,16 @@ class DietPlanSuggestion extends Model
                     $query->orWhere('weight_loss_medication', $weightLossMedication);
                 }
             })
-            ->orderByRaw('(diet_type IS NOT NULL) + (weight_loss_medication IS NOT NULL) DESC')
+            ->where(function ($query) use ($athleteOrNot) {
+                $query->whereNull('athlete_or_not');
+                if ($athleteOrNot !== null) {
+                    $query->orWhere('athlete_or_not', $athleteOrNot);
+                }
+            })
+            ->orderByRaw('(diet_type IS NOT NULL) + (weight_loss_medication IS NOT NULL) + (athlete_or_not IS NOT NULL) DESC')
             ->orderByRaw('diet_type IS NULL')
             ->orderByRaw('weight_loss_medication IS NULL')
+            ->orderByRaw('athlete_or_not IS NULL')
             ->orderBy('id')
             ->first()?->dietPlan;
     }
