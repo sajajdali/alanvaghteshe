@@ -85,7 +85,7 @@ class ProfileController extends Controller
                 ];
             }
 
-            $target = null;
+            $target = $this->getEmptyTargetPage();
         } else {
             $banner = null;
             $target = $this->getTargetPage($user);
@@ -95,6 +95,48 @@ class ProfileController extends Controller
             'target' => $target
         ]);
 
+    }
+
+    private function getEmptyTargetPage(): array
+    {
+        $emptyTargetPlan = static fn (): array => [
+            'title' => null,
+            'total_days' => null,
+            'status' => null,
+            'milestones' => [],
+        ];
+
+        return [
+            'id' => null,
+            'diet_id' => null,
+            'plane_name' => null,
+            'top_statistics' => [
+                'chart' => [
+                    'total_day' => null,
+                    'current_day' => null,
+                    'percent' => null,
+                ],
+                'tile' => [
+                    'end_at' => null,
+                    'start_at' => null,
+                    'calorie' => null,
+                    'target_weight' => null,
+                    'current_weight' => null,
+                    'start_weight' => null,
+                ],
+            ],
+            'add_weight_button' => null,
+            'calculate_target_plan' => [
+                $emptyTargetPlan(),
+                $emptyTargetPlan(),
+                $emptyTargetPlan(),
+            ],
+            'calorie_distribution_per_week' => [
+                'title' => null,
+                'desc' => null,
+                'chart' => [],
+            ],
+        ];
     }
 
     private function calculatePercentage($total, $part)
@@ -266,8 +308,9 @@ class ProfileController extends Controller
         if ($totalWeightToLose <= 0) {
             // User has already reached or is below the target weight
             return [
+                'title' => $title,
                 'total_days' => 0,
-
+                'status' => $default,
                 'milestones' => [
                     ['days' => 0, 'weight' => $currentWeight], // Starting point
                 ],
